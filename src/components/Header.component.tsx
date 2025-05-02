@@ -1,19 +1,18 @@
-import Btn from "./Btn.component";
+import { ReactNode } from "react";
 
 interface Types {
-    title: string
-    more?: string
+  title: string;
+  more?: string;
+  children?: ReactNode;
 }
 
-export default function Header(props: Types) {
-    return (
-        <div className={`flex flex-row p-2 border-2 text-center ${props.more}`}  >
-            <div className="basis-64">
-                <h1> {props.title} </h1>
-            </div>
-            <div className="basis-128"></div>
-            <div className="basis-64">
-            </div>
-        </div>
-    );
+export default function Header({ title, more, children }: Types) {
+  return (
+    <div className={`flex items-center justify-between p-4 border-b shadow-sm ${more}`}>
+      <h1 className="text-xl font-bold">{title}</h1>
+      <div>
+        {children}
+      </div>
+    </div>
+  );
 }

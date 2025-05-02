@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ReactNode } from "react";
 
 interface values {
     
@@ -7,11 +8,13 @@ interface values {
     colorHover? : string
     padding?: string
     more?: string
+    children?: ReactNode
 }
 
 export default function BtnSubmit(props: values) {
     return (
-        <button 
+        <div className={"flex justify-between items-center"} >
+            <button 
                 type="submit"
                 disabled={props.isSubmitting}
                 className={`flex ${props.more} items-center gap-2 bg-green-600 border text-white px-2 py-1 rounded 
@@ -41,5 +44,8 @@ export default function BtnSubmit(props: values) {
                     'SUBMIT'
                 )}
             </button>
+            {props.children}
+        </div>
+        
     );
 }

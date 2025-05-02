@@ -1,7 +1,137 @@
+'use client';
+import Alert from "@/components/Alert.component";
+import Btn from "@/components/Btn.component";
+import BtnSubmit from "@/components/BtnSubmit.component";
+import LoginDto from "@/dtos/UserDTOs/LoginDto";
+import api from "@/services/api";
+import { AxiosResponse } from "axios";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
 export default function Login() {
+    const router: AppRouterInstance = useRouter();
+    
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+
+    const [msgAlert, setMsgAlert] = useState<string>('');
+    const [colorAlert, setColorAlert] = useState<string>('');
+    const [alert, setAlert] = useState<boolean>(false);
+
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    
+    useEffect(() => {
+        logged()
+    }, []);
+
+    
+    async function logged() {
+        const token: string | null = localStorage.getItem("token");
+
+        if (token) {
+            router.push('/')
+        }
+    }
+
+    async function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        const data: LoginDto = {
+            email,
+            password
+        }
+
+        const res: AxiosResponse<any, any> = await api.post('/user', data)
+
+        if (res.status === 500) {
+            setIsSubmitting(false);
+            setMsgAlert('Error the make the register! Please try again later ');
+            setColorAlert('red')
+            setAlert(true);
+            await turnOffAlert();
+            await clearInputs();
+        }
+
+        if (res.status === 401) {
+            setIsSubmitting(false);
+            setColorAlert('yellow')
+            setMsgAlert(res.data);
+            setAlert(true)
+            await turnOffAlert();
+        }
+
+        if (res.status === 200) {
+            localStorage.setItem('token', res.data.access_token);
+            localStorage.setItem('refresh_token', res.data.refresh_token);
+            setIsSubmitting(false);
+            setColorAlert('green')
+            setMsgAlert('User created with success!');
+            setAlert(true);
+            await turnOffAlert();
+            await clearInputs();
+            router.push('/');
+        }
+
+    }
+
+    async function turnOffAlert() {
+        setTimeout(() => {
+            setAlert(false)
+        }, 4000)
+    }
+
+    async function clearInputs() {
+        setEmail('');
+        setPassword('');
+    }
+
     return (
-        <div>
-            login
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center border p-6 shadow-md w-full max-w-[60%] rounded">
+            {alert && <Alert color={colorAlert} name={msgAlert} />}
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="text-left">
+                <label htmlFor="email" className="block mb-1 font-medium">Email:</label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  id="email"
+                  className="w-full p-2 bg-black rounded border"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+      
+              <div className="text-left">
+                <label htmlFor="password" className="block mb-1 font-medium">Password:</label>
+                <input 
+                  type="password" 
+                  name="password" 
+                  id="password"
+                  className="w-full p-2 bg-black rounded border"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+      
+              <div className="flex justify-between items-center mt-1">
+                <BtnSubmit isSubmitting={isSubmitting}  > 
+                    <Btn url={""} color={"black"} name={"Back"} more={"ms-2"} />
+                </BtnSubmit>
+                
+                <p className="text-sm">
+                  Don't have an account?{' '}
+                  <Btn url={"auth/register"} color={"black"} name={"Register"} />
+                </p>
+              </div>
+            </form>
+          </div>
         </div>
-    );
+      );
+      
 }
