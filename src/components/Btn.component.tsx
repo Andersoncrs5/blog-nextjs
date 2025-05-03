@@ -18,7 +18,7 @@ export default function Btn(props: Values) {
   return (
     <Link
       href={`/${props.url}`}
-      className={clsx(bg, hover, "border rounded pe-3 ps-3", padding, props.more)}
+      className={clsx(bg, hover, "border rounded pe-3 ps-3 ", padding, props.more)}
     >
       {props.name}
     </Link>

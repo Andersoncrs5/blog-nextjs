@@ -17,12 +17,12 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
-    setLoad(true);
     getPosts(currentPage);
     log();
   }, [currentPage]);
 
   async function getPosts(page = 1, limit = 10) {
+    setLoad(true);
     const res: AxiosResponse<any, any> = await api.get(`/post?page=${page}&limit=${limit}`);
 
     if (res.status === 200) {
@@ -57,10 +57,10 @@ export default function Home() {
             {posts.map((e: PostDto) => (
               <div className="my-2 p-3 border rounded" key={e.id}>
                 <h1 className="text-white">{e.title}</h1>
-                <Line width={"90"} color="white" more={"my-2"} />
+                <Line width={""} color="white" more={"my-2"} />
                 
                 <div className={"flex justify-between items-center"} >
-                  <Btn url={""} color={""} name={"See posts"}  />
+                  <Btn url={`posts/see-post/${e.id}`} color={""} name={"See posts"}  />
                 </div>
               </div>
             ))}
@@ -90,7 +90,9 @@ export default function Home() {
           }
         </div>
         <div className={"w-2/9 px-2"}>
-          <div className={"bg-gray-200 p-4"}>Coluna 3</div>
+          <div className={""}>
+            {logged && <Menu /> }
+          </div>
         </div>
       </div>
 

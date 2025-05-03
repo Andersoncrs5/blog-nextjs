@@ -2,6 +2,7 @@
 import Alert from "@/components/Alert.component";
 import Btn from "@/components/Btn.component";
 import BtnSubmit from "@/components/BtnSubmit.component";
+import ErrorForm from "@/components/ErrorForm.component";
 import LoginDto from "@/dtos/UserDTOs/LoginDto";
 import api from "@/services/api";
 import { AxiosResponse } from "axios";
@@ -19,6 +20,9 @@ export default function Login() {
     const [colorAlert, setColorAlert] = useState<string>('');
     const [alert, setAlert] = useState<boolean>(false);
 
+    const [errorForm, setErrorForm] = useState<boolean>(false);
+    const [msgErrorForm, setMsgErrorForm] = useState<string[]>([]);
+
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     
     useEffect(() => {
@@ -35,52 +39,66 @@ export default function Login() {
     }
 
     async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        const data: LoginDto = {
-            email,
-            password
-        }
-
-        const res: AxiosResponse<any, any> = await api.post('/user', data)
-
-        if (res.status === 500) {
-            setIsSubmitting(false);
-            setMsgAlert('Error the make the register! Please try again later ');
-            setColorAlert('red')
-            setAlert(true);
-            await turnOffAlert();
-            await clearInputs();
-        }
-
-        if (res.status === 401) {
-            setIsSubmitting(false);
-            setColorAlert('yellow')
-            setMsgAlert(res.data);
-            setAlert(true)
-            await turnOffAlert();
-        }
-
+      e.preventDefault();
+      setIsSubmitting(true);
+    
+      const data: LoginDto = { email, password };
+    
+      try {
+        const res: AxiosResponse<any, any> = await api.post('/user/login', data);
+    
         if (res.status === 200) {
-            localStorage.setItem('token', res.data.access_token);
-            localStorage.setItem('refresh_token', res.data.refresh_token);
-            setIsSubmitting(false);
-            setColorAlert('green')
-            setMsgAlert('User created with success!');
+          localStorage.setItem('token', res.data.access_token);
+          localStorage.setItem('refresh_token', res.data.refresh_token);
+          setColorAlert('green');
+          setMsgAlert('User logged in with success!');
+          setAlert(true);
+          await turnOffAlert();
+          await clearInputs();
+          router.push('/');
+        }
+      } catch (error: any) {
+        setIsSubmitting(false);
+    
+        if (error.response) {
+          if (error.response.status === 400) {
+            setMsgErrorForm(error.response.data.message);
+            setErrorForm(true);
+            await turnOffErrorForm();
+          } 
+          if (error.response.status === 401) {
+            setColorAlert('red-400');
+            setMsgAlert(error.response.data.message || 'Invalid credentials');
+            setAlert(true);
+            await turnOffAlert();
+          } 
+          if (error.response.status === 500) {
+            setMsgAlert('Error while logging in. Try again later.');
+            setColorAlert('red');
             setAlert(true);
             await turnOffAlert();
             await clearInputs();
-            router.push('/');
+          }
+        } else {
+          setMsgAlert('Unknown error occurred.');
+          setColorAlert('red');
+          setAlert(true);
         }
-
-    }
+      }
+    }    
+    
 
     async function turnOffAlert() {
         setTimeout(() => {
             setAlert(false)
-        }, 4000)
+        }, 5000)
     }
+
+    async function turnOffErrorForm() {
+      setTimeout(() => {
+          setErrorForm(false)
+      }, 10000)
+  }
 
     async function clearInputs() {
         setEmail('');
@@ -91,6 +109,7 @@ export default function Login() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center border p-6 shadow-md w-full max-w-[60%] rounded">
             {alert && <Alert color={colorAlert} name={msgAlert} />}
+            {errorForm && <ErrorForm data={msgErrorForm} /> }
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="text-left">

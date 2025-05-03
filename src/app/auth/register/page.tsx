@@ -2,6 +2,7 @@
 import Alert from "@/components/Alert.component";
 import Btn from "@/components/Btn.component";
 import BtnSubmit from "@/components/BtnSubmit.component";
+import ErrorForm from "@/components/ErrorForm.component";
 import RegisterDto from "@/dtos/UserDTOs/RegisterDto";
 import api from "@/services/api";
 import { AxiosResponse } from "axios";
@@ -19,6 +20,9 @@ export default function Register() {
     const [msgAlert, setMsgAlert] = useState<string>('');
     const [colorAlert, setColorAlert] = useState<string>('');
     const [alert, setAlert] = useState<boolean>(false);
+
+    const [errorForm, setErrorForm] = useState<boolean>(false);
+    const [msgErrorForm, setMsgErrorForm] = useState<string[]>([]);
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -45,35 +49,50 @@ export default function Register() {
             password
         }
 
-        const res: AxiosResponse<any, any> = await api.post('/user', data)
+        try {
+            const res: AxiosResponse<any, any> = await api.post('/user', data)
 
-        if (res.status === 500) {
-            setIsSubmitting(false);
-            setMsgAlert('Error the make the register! Please try again later ');
-            setColorAlert('red')
-            setAlert(true);
-            await turnOffAlert();
-            await clearInputs();
+            if (res.status === 201) {
+                localStorage.setItem('token', res.data.access_token);
+                localStorage.setItem('refresh_token', res.data.refresh_token);
+                setIsSubmitting(false);
+                setColorAlert('green')
+                setMsgAlert('User created with success!');
+                setAlert(true);
+                await turnOffAlert();
+                await clearInputs();
+                router.push('/');
+            }
+        } catch (error: any) {
+            if (error.response.status === 500) {
+                setIsSubmitting(false);
+                setMsgAlert('Error the make the register! Please try again later ');
+                setColorAlert('red')
+                setAlert(true);
+                await turnOffAlert();
+                await clearInputs();
+            }
+
+            if (error.response.status === 400) {
+                setIsSubmitting(false);
+                setMsgErrorForm(error.response.data.message);
+                setErrorForm(true);
+                turnOffErrorForm();
+            }
+
         }
-
-        if (res.status === 201) {
-            localStorage.setItem('token', res.data.access_token);
-            localStorage.setItem('refresh_token', res.data.refresh_token);
-            setIsSubmitting(false);
-            setColorAlert('green')
-            setMsgAlert('User created with success!');
-            setAlert(true);
-            await turnOffAlert();
-            await clearInputs();
-            router.push('/');
-        }
-
     }
 
     async function turnOffAlert() {
         setTimeout(() => {
             setAlert(false)
         }, 4000)
+    }
+
+    async function turnOffErrorForm() {
+        setTimeout(() => {
+            setErrorForm(false)
+        }, 10000)
     }
 
     async function clearInputs() {
@@ -86,6 +105,8 @@ export default function Register() {
         <div className="flex items-center justify-center min-h-screen ">
             <div className="text-center border p-6 shadow-md w-full max-w-[60%] rounded">
                 {alert && <Alert color={colorAlert} name={msgAlert} /> }
+                {errorForm && <ErrorForm data={msgErrorForm} /> }
+                
                 <form onSubmit={handleSubmit} >
                     <div>
                         <label htmlFor="name">name:</label>
