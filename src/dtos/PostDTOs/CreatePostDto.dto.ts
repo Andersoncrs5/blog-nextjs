@@ -1,4 +1,4 @@
-export default interface PostDto {
+export default interface CreatePostDto {
     title: string;
     content: string;
     category: string;

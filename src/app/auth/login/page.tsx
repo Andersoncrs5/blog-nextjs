@@ -2,6 +2,7 @@
 import Alert from "@/components/Alert.component";
 import Btn from "@/components/Btn.component";
 import BtnSubmit from "@/components/BtnSubmit.component";
+import CustomInput from "@/components/CustomInput.component";
 import ErrorForm from "@/components/ErrorForm.component";
 import LoginDto from "@/dtos/UserDTOs/LoginDto";
 import api from "@/services/api";
@@ -112,32 +113,22 @@ export default function Login() {
             {errorForm && <ErrorForm data={msgErrorForm} /> }
             
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="text-left">
-                <label htmlFor="email" className="block mb-1 font-medium">Email:</label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  id="email"
-                  className="w-full p-2 bg-black rounded border"
-                  value={email}
+              <CustomInput 
+                  type={"email"}
+                  nameLabel={"Email"}
+                  value={email} 
                   onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
+                  placeholder="adc@example.com"
+              />
       
-              <div className="text-left">
-                <label htmlFor="password" className="block mb-1 font-medium">Password:</label>
-                <input 
-                  type="password" 
-                  name="password" 
-                  id="password"
-                  className="w-full p-2 bg-black rounded border"
-                  value={password}
+              <CustomInput 
+                  type={"password"}
+                  nameLabel={"password"}
+                  value={password} 
                   onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-      
+                  placeholder="adc@example.com"
+              />
+
               <div className="flex justify-between items-center mt-1">
                 <BtnSubmit isSubmitting={isSubmitting}  > 
                     <Btn url={""} color={"black"} name={"Back"} more={"ms-2"} />
