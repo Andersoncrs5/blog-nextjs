@@ -3,18 +3,19 @@ import Btn from "./Btn.component";
 import { AxiosResponse } from "axios";
 import BtnFunc from "./BtnFunc.component";
 
-async function logout() {
-
+interface Types {
+    children?: any
 }
 
-export default function Menu() {
+export default function Menu(props: Types) {
 
     return (
-        <div className={"p-2 m-1 border"} >
+        <div className={"p-2 m-1"} >
             <Btn url={"posts/create-post"} color={"white"} name={"CREATE NEW POST"}  padding="1.5" more={"block text-center mt-2"}  />
-            <Btn url={"post/see-my-posts"} color={"white"} name={"SEE MY POSTS"} more={"block text-center mt-2"} padding="1.5"  />
-            <Btn url={"post/see-my-favorite-posts"} color={"white"} name={"SEE MY FAVORITE POSTS"} more={"block text-center mt-2"} padding="1.5"  />
-            <BtnFunc name={"LOGOUT"} color={""} onClick={logout} more={"block text-center mt-2 w-[100%]"} padding="1.5"/>
+            <Btn url={"posts/see-my-posts"} color={"white"} name={"SEE MY POSTS"} more={"block text-center mt-2"} padding="1.5"  />
+            <Btn url={"posts/see-my-favorite-posts"} color={"white"} name={"SEE MY FAVORITE POSTS"} more={"block text-center mt-2"} padding="1.5"  />
+            <Btn url={""} color={"white"} name={"SEE MY COMMENTS"} more={"block text-center mt-2"} padding="1.5"  />
+            {props.children}
         </div>
     );
 }

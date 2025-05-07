@@ -12,6 +12,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+
 export default function CreatePost() {
     const router: AppRouterInstance = useRouter();
 
@@ -27,7 +28,7 @@ export default function CreatePost() {
     const [msgErrorForm, setMsgErrorForm] = useState<string[]>([]);
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<CategoryDto[]>([]);
 
     useEffect(() => {
         logged();
@@ -99,6 +100,7 @@ export default function CreatePost() {
                 setAlert(true);
                 turnOffAlert(6000);
             }
+
         }
     }
 
@@ -156,7 +158,7 @@ export default function CreatePost() {
                             onChange={(e) => setCategory(e.target.value)}
                         >
                             <option value="" disabled>CHOOSE CATEGORY</option>
-                            {categories.map((e: Category) => (
+                            {categories.map((e: CategoryDto) => (
                                 <option key={e.id} value={e.name}>
                                     {e.name}
                                 </option>

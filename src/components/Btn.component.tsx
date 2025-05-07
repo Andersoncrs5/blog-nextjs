@@ -8,17 +8,18 @@ interface Values {
   colorHover?: string;
   padding?: string;
   more?: string;
+  colorTextHover?: string;
 }
 
 export default function Btn(props: Values) {
-  const bg = `bg-${props.color}`;
-  const hover = `hover:bg-${props.colorHover || 'white'}`;
-  const padding = `p-${props.padding || 1}`;
+  const bg = `bg-${String(props.color)}`;
+  const hover: string = `hover:bg-${props.colorHover||'white'} hover:text-${props.colorTextHover||'black'}`;
+  const padding = `p-${String(props.padding||1)}`;
 
   return (
     <Link
       href={`/${props.url}`}
-      className={clsx(bg, hover, "border rounded pe-3 ps-3 ", padding, props.more)}
+      className={clsx(bg, hover, " border rounded pe-3 ps-3 ", padding, props.more)}
     >
       {props.name}
     </Link>

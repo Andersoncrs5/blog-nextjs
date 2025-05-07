@@ -1,4 +1,4 @@
-interface Category {
+export default interface CategoryDto {
     id?:number
     name: string
     nameUser?: string
